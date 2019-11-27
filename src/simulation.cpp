@@ -2,15 +2,41 @@
 #include <cmath>
 #include <iostream>
 
-Simulation::Simulation(uint N, double tau, double deltaTau, double kappa, double omega) : m_N(N), m_tau(tau),
-                                                                                          m_deltaTau(deltaTau),
-                                                                                          m_kappa(kappa),
-                                                                                          m_omega(omega) {
+Simulation::Simulation(uint N, double tau, double deltaTau, double kappa, double omega, uint nStepMetrics,
+                       uint nStepDensity) : m_N(N), m_tau(tau),
+                                            m_deltaTau(deltaTau),
+                                            m_kappa(kappa),
+                                            m_omega(omega),
+                                            m_nStepMetrics(nStepMetrics),
+                                            m_nStepDensity(nStepDensity) {
     initialize(N);
 }
 
+Simulation::Simulation(const std::string &filename) {
+    std::ifstream file(filename);
+    checkIfFileExists(file);
+
+    std::string line;
+    m_N = getNextParameter<uint>(file, line);
+    m_tau = getNextParameter<double>(file, line);
+    m_deltaTau = getNextParameter<double>(file, line);
+    m_kappa = getNextParameter<double>(file, line);
+    m_omega = getNextParameter<double>(file, line);
+    m_n = getNextParameter<double>(file, line);
+    m_nStepMetrics = getNextParameter<uint>(file, line);
+    m_nStepDensity = getNextParameter<uint>(file, line);
+    initialize(m_N);
+    file.close();
+}
+
+
 void Simulation::initialize(uint N) {
+    m_metrics = Metrics{0, 0, 0};
+
     const auto n = N + 1;
+    m_xK.reserve(n);
+    m_phiReal.reserve(n);
+    m_phiImg.reserve(n);
     m_Hreal.resize(n);
     m_Himg.resize(n);
 
@@ -28,7 +54,7 @@ void Simulation::initialize(uint N) {
     setHamiltonian(m_Himg, m_phiImg);
 }
 
-void Simulation::setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi) {
+void Simulation::setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi) noexcept {
     for (uint i = 1; i < m_N; ++i) {
         hamiltonian.at(i) =
                 -0.5 * (phi.at(i + 1) + phi.at(i - 1) - 2 * phi.at(i)) * m_N * m_N +
@@ -36,17 +62,17 @@ void Simulation::setHamiltonian(std::vector<double> &hamiltonian, const std::vec
     }
 }
 
-double Simulation::getRho(uint k) {
+double Simulation::getRho(uint k) const {
     const auto phiReal = m_phiReal.at(k);
     const auto phiImg = m_phiImg.at(k);
     return phiReal * phiReal + phiImg * phiImg;
 }
 
-std::vector<double> Simulation::getRho() {
+std::vector<double> Simulation::getRho() const noexcept {
     std::vector<double> rhos;
     rhos.reserve(m_N);
     for (uint i = 0; i < m_N + 1; ++i)
-        rhos.push_back(getRho(i));
+        rhos.emplace_back(getRho(i));
     return rhos;
 }
 
@@ -69,9 +95,14 @@ void Simulation::setMetrics() {
 }
 
 
-void Simulation::run() {
+void Simulation::run(const std::string &metricsFilename, const std::string &densityFilename) {
+    std::ofstream metricsFile(metricsFilename);
+    std::ofstream densityFile(densityFilename);
+    checkIfFileExists(metricsFile);
+    checkIfFileExists(densityFile);
+
     const auto nStep = static_cast<uint>(m_tau / m_deltaTau);
-    double step{0.0};
+    auto step{0.0};
     for (uint i = 0; i < nStep; ++i) {
         for (uint k = 0; k < m_N; ++k)
             m_phiReal.at(k) += m_Himg.at(k) * m_deltaTau / 2; // (32)
@@ -86,8 +117,23 @@ void Simulation::run() {
         for (uint k = 0; k < m_N; ++k)
             m_phiReal.at(k) += m_Himg.at(k) * m_deltaTau / 2; // (34)
 
+        if (i % m_nStepMetrics == 0)
+            saveMetrics(step, metricsFile);
+        if (i % m_nStepDensity == 0)
+            saveDensity(densityFile);
         step += m_deltaTau;
-        const auto m = getMetrics();
-        std::cout << "Step: " << step << "\tX_mean: " << m.xMean << "\tEpsilon: " << m.epsilon << '\n';
     }
+    metricsFile.close();
+    densityFile.close();
+}
+
+void Simulation::saveMetrics(double step, std::ofstream &file) {
+    const auto[N, xMean, epsilon] = getMetrics();
+    file << step << ',' << N << ',' << xMean << ',' << epsilon << '\n';
+}
+
+void Simulation::saveDensity(std::ofstream &file) {
+    for (const auto &rho : getRho())
+        file << rho << ',';
+    file << '\n';
 }
