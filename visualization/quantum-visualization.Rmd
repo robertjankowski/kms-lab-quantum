@@ -1,0 +1,22 @@
+---
+title: "quantum-visualization"
+author: "Robert Jankowski"
+date: "11/27/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+test <- read_csv("../test.txt")
+test$x <- seq(1, 100)
+colnames(test) <- c("rho", "x")
+```
+
+```{r}
+plot(test$x, test$rho, lty=1, lwd=2, "l")
+```
+

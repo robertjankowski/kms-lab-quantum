@@ -1,4 +1,4 @@
-# simulation
+# Simulation of 1D time dependent Schrödinger equation
 
 Plots:
 ```
@@ -15,3 +15,6 @@ Animation
 ```
 rho (k - index) for every tau 
 ```
+
+
+Remember of `-O3` flag.
