@@ -67,3 +67,139 @@ system('convert *.png -delay 3 -loop 0 animation.gif')
 plot(as.numeric(density[100,]))
 ```
 
+
+***
+## Testowanie poprawności algorytmu przy wyłączonym polu oscylującym (kappa = 0, omage = 0) dla n=1,4,9
+```{r}
+## Plik konfiguracyjny, tylko n się zmieniało
+# 100   # N
+# 10    # tau
+# 1e-4  # delta_tau
+# 0     # kappa
+# 0     # omega
+# 9     # n
+# 1000  # save_metrics
+# 1000  # save_density
+```
+
+
+```{r, info=F, warning=F, message=F}
+metrics_n1 <- read_csv("../output/metrics_init_n=1.csv", col_names = F)
+metrics_n4 <- read_csv("../output/metrics_init_n=4.csv", col_names = F)
+metrics_n9 <- read_csv("../output/metrics_init_n=9.csv", col_names = F)
+
+colnames(metrics_n1) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_n4) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_n9) <- c("tau", "N", "<x>", "epsilon")
+```
+
+**Norma**
+```{r, fig.width=10, fig.height=5}
+ggplot() +
+  geom_line(data = metrics_n1, aes(tau, N, color = "n=1")) +
+  geom_line(data = metrics_n4, aes(tau, N, color = "n=4")) +
+  geom_line(data = metrics_n9, aes(tau, N, color = "n=9")) +
+  theme_light()
+```
+
+**<x>**
+```{r, fig.width=10, fig.height=5}
+ggplot() +
+  geom_line(data = metrics_n1, aes(tau, `<x>`, color = "n=1")) +
+  geom_line(data = metrics_n4, aes(tau, `<x>`, color = "n=4")) +
+  geom_line(data = metrics_n9, aes(tau, `<x>`, color = "n=9")) +
+  theme_light()
+```
+**Energia**
+```{r, fig.width=10, fig.height=5}
+ggplot() +
+  geom_line(data = metrics_n1, aes(tau, epsilon, color = "n=1")) +
+  geom_line(data = metrics_n4, aes(tau, epsilon, color = "n=4")) +
+  geom_line(data = metrics_n9, aes(tau, epsilon, color = "n=9")) +
+  theme_light()
+```
+
+# Symulacje z zaburzającym się polem elektrycznym
+```{r}
+## Plik konfiguracyjny
+# 100   # N
+# 5     # tau
+# 1e-4  # delta_tau
+# 8     # kappa
+# 0     # omega
+# 4     # n
+# 1000  # save_metrics
+# 1000  # save_density
+```
+
+```{r, info=F, warning=F, message=F}
+# dla kappa=3, n=1
+# metrics_omega3 <- read_csv("../output/metrics_kappa=1_omega=3.csv", col_names = F)
+# metrics_omega4 <- read_csv("../output/metrics_kappa=1_omega=4.csv", col_names = F)
+# metrics_omega8 <- read_csv("../output/metrics_kappa=1_omega=8.csv", col_names = F)
+
+metrics_omega3 <- read_csv("../output/metrics_n=4_kappa=8_omega=3.csv", col_names = F)
+metrics_omega4 <- read_csv("../output/metrics_n=4_kappa=8_omega=4.csv", col_names = F)
+metrics_omega8 <- read_csv("../output/metrics_n=4_kappa=8_omega=8.csv", col_names = F)
+metrics_omega16 <- read_csv("../output/metrics_n=4_kappa=8_omega=16.csv", col_names = F)
+metrics_omega32 <- read_csv("../output/metrics_n=4_kappa=8_omega=32.csv", col_names = F)
+
+colnames(metrics_omega3) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega4) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega8) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega16) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega32) <- c("tau", "N", "<x>", "epsilon")
+```
+
+**Energia**
+```{r, fig.width=12, fig.height=5}
+ggplot() +
+  geom_line(data = metrics_omega3, aes(tau, epsilon, color = "omega=3pi^2/2")) +
+  geom_line(data = metrics_omega4, aes(tau, epsilon, color = "omega=4pi^2/2")) +
+  geom_line(data = metrics_omega8, aes(tau, epsilon, color = "omega=8pi^2/2")) +
+  geom_line(data = metrics_omega8, aes(tau, epsilon, color = "omega=16pi^2/2")) +
+  geom_line(data = metrics_omega8, aes(tau, epsilon, color = "omega=32pi^2/2")) +
+  theme_light()
+```
+
+
+
+```{r}
+density.animation <- function(filename) {
+  
+  density <- read_csv(filename, col_names = F)
+  
+  rename <- function(x){
+    if (x < 10) {
+      return(name <- paste('000',i,'plot.png',sep=''))
+    }
+    if (x < 100 && i >= 10) {
+      return(name <- paste('00',i,'plot.png', sep=''))
+    }
+    if (x >= 100) {
+      return(name <- paste('0', i,'plot.png', sep=''))
+    }
+  }
+  
+  tmp <- str_split(filename, "/")[[1]][3]
+  title_name <- str_split(tmp, "\\.")[[1]][1]
+  cat(title_name, '\n')
+  for (i in 1:nrow(density)) {
+    name <- rename(i)
+    png(name)
+    plot(as.numeric(density[i,]), main = paste(title_name, i, sep = " "), xlab = "k", ylab = "rho")
+    dev.off()
+  }
+  
+  convert_command <- paste('convert *.png -delay 1x30 -loop 0 ', title_name, ".gif", sep="")
+  cat(convert_command)
+  system(convert_command)
+  system('rm *.png')
+}
+```
+
+
+```{r}
+density.animation("../output/density__n=1_kappa=8_omega=3.csv")
+```
+

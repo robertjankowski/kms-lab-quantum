@@ -25,10 +25,21 @@ Simulation::Simulation(const std::string &filename) {
     m_n = getNextParameter<double>(file, line);
     m_nStepMetrics = getNextParameter<uint>(file, line);
     m_nStepDensity = getNextParameter<uint>(file, line);
+    // Simulation with electric field (page 6)
+    // omega = {3pi^2/2, 4pi*2/2, 8pi^2/2, ...}
+    m_omega = 32 * M_PI * M_PI / 2;
     initialize(m_N);
     file.close();
 }
 
+
+void Simulation::setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi) noexcept {
+    for (uint i = 1; i < m_N; ++i) {
+        hamiltonian.at(i) =
+                -0.5 * (phi.at(i + 1) + phi.at(i - 1) - 2 * phi.at(i)) * m_N * m_N +
+                m_kappa * (m_xK.at(i) - 0.5) * phi.at(i) * std::sin(m_omega * m_tau);
+    }
+}
 
 void Simulation::initialize(uint N) {
     m_metrics = Metrics{0, 0, 0};
@@ -52,14 +63,6 @@ void Simulation::initialize(uint N) {
     std::fill(m_Himg.begin(), m_Himg.end(), 0.0);
     setHamiltonian(m_Hreal, m_phiReal);
     setHamiltonian(m_Himg, m_phiImg);
-}
-
-void Simulation::setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi) noexcept {
-    for (uint i = 1; i < m_N; ++i) {
-        hamiltonian.at(i) =
-                -0.5 * (phi.at(i + 1) + phi.at(i - 1) - 2 * phi.at(i)) * m_N * m_N +
-                m_kappa * (m_xK.at(i) - 0.5) * phi.at(i) * std::sin(m_omega * m_tau);
-    }
 }
 
 double Simulation::getRho(uint k) const {
