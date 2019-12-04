@@ -64,7 +64,7 @@ system('convert *.png -delay 3 -loop 0 animation.gif')
 ```
 
 ```{r}
-plot(as.numeric(density[100,]))
+plot(as.numeric(density[100,]), type = "l", lwd=2)
 ```
 
 
@@ -164,9 +164,8 @@ ggplot() +
 
 
 
-```{r}
+```{r, message=FALSE}
 density.animation <- function(filename) {
-  
   density <- read_csv(filename, col_names = F)
   
   rename <- function(x){
@@ -187,11 +186,11 @@ density.animation <- function(filename) {
   for (i in 1:nrow(density)) {
     name <- rename(i)
     png(name)
-    plot(as.numeric(density[i,]), main = paste(title_name, i, sep = " "), xlab = "k", ylab = "rho")
+    plot(as.numeric(density[i,]), main = paste(title_name, i, sep = " "), xlab = "k", ylab = "rho", type = "l", lwd=2)
     dev.off()
   }
   
-  convert_command <- paste('convert *.png -delay 1x30 -loop 0 ', title_name, ".gif", sep="")
+  convert_command <- paste('convert -delay 1x5 *.png -loop 0 ', title_name, ".gif", sep="")
   cat(convert_command)
   system(convert_command)
   system('rm *.png')
@@ -201,5 +200,74 @@ density.animation <- function(filename) {
 
 ```{r}
 density.animation("../output/density__n=1_kappa=8_omega=3.csv")
+```
+
+
+```{r, message=FALSE}
+library(gridExtra)
+# 100   # N
+# 10    # tau
+# 1e-4  # delta_tau
+# 3     # kappa
+# 1     # n - is changing
+# 1000  # save_metrics
+# 1000  # save_density
+
+omega_n_4 <- read_csv("../output/resonance_freq_omega_n=4.txt", col_names = F)
+omega_n_9 <- read_csv("../output/resonance_freq_omega_n=9.txt", col_names = F)
+omega_n_1 <- read_csv("../output/resonance_freq_omega_n=1.txt", col_names = F)
+
+colnames(omega_n_1) <- c("omega", "Energy")
+colnames(omega_n_4) <- c("omega", "Energy")
+colnames(omega_n_9) <- c("omega", "Energy")
+```
+
+```{r, fig.width=14, fig.height=5}
+o1 <- ggplot(omega_n_1) + 
+  geom_line(aes(omega, Energy)) + 
+  theme_light() +
+  labs(title = "n=1", y = "<Energy>")
+o4 <- ggplot(omega_n_4) + 
+  geom_line(aes(omega, Energy)) + 
+  theme_light() +
+  labs(title = "n=4", y = "<Energy>")
+o9 <- ggplot(omega_n_9) + 
+  geom_line(aes(omega, Energy)) + 
+  theme_light() +
+  labs(title = "n=9", y = "<Energy>")
+
+grid.arrange(o1, o4, o9, ncol = 3)
+```
+
+
+### Proper graph with resonanse omega
+```{r, message=FALSE}
+omega_n1 <- read_csv("../output/resonance_freq_omega_n=1_zoom.txt", col_names = F)
+
+colnames(omega_n1) <- c("omega", "Energy")
+
+resonanse_omega <- omega_n1[which(omega_n1$Energy == max(omega_n1$Energy)), ]$omega
+omega_n1$omega <- omega_n1$omega / resonanse_omega
+```
+
+
+```{r}
+ggplot(omega_n1) + 
+  geom_line(aes(omega, Energy)) + 
+  theme_light() +
+  labs(title = "n=1", y = "<Energy>", x = "omega / omega_resonanse")
+```
+
+```{r, message=F}
+density.animation("../output/resonance_density_kappa=3__omega=14_n=1.csv")
+density.animation("../output/resonance_density_kappa=3__omega=15_n=1.csv")
+density.animation("../output/resonance_density_kappa=3__omega=16_n=1.csv")
+```
+
+
+```{r}
+density.animation("../output/resonance_density_kappa=3__omega=33_n=4.csv")
+density.animation("../output/resonance_density_kappa=3__omega=34_n=4.csv")
+density.animation("../output/resonance_density_kappa=3__omega=35_n=4.csv")
 ```
 

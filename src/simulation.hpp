@@ -44,10 +44,12 @@ public:
 
     void run(const std::string &metricsFilename, const std::string &densityFilename);
 
+    void setOmega(double omega) { m_omega = omega; }
+
 private:
     void initialize(uint N);
 
-    void setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi) noexcept;
+    void setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi, double tau) noexcept;
 
     [[nodiscard]] double getRho(uint k) const;
 

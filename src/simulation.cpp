@@ -21,7 +21,6 @@ Simulation::Simulation(const std::string &filename) {
     m_tau = getNextParameter<double>(file, line);
     m_deltaTau = getNextParameter<double>(file, line);
     m_kappa = getNextParameter<double>(file, line);
-    m_omega = getNextParameter<double>(file, line);
     m_n = getNextParameter<double>(file, line);
     m_nStepMetrics = getNextParameter<uint>(file, line);
     m_nStepDensity = getNextParameter<uint>(file, line);
@@ -33,11 +32,11 @@ Simulation::Simulation(const std::string &filename) {
 }
 
 
-void Simulation::setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi) noexcept {
+void Simulation::setHamiltonian(std::vector<double> &hamiltonian, const std::vector<double> &phi, double tau) noexcept {
     for (uint i = 1; i < m_N; ++i) {
         hamiltonian.at(i) =
                 -0.5 * (phi.at(i + 1) + phi.at(i - 1) - 2 * phi.at(i)) * m_N * m_N +
-                m_kappa * (m_xK.at(i) - 0.5) * phi.at(i) * std::sin(m_omega * m_tau);
+                m_kappa * (m_xK.at(i) - 0.5) * phi.at(i) * std::sin(m_omega * tau);
     }
 }
 
@@ -61,8 +60,8 @@ void Simulation::initialize(uint N) {
 
     std::fill(m_Hreal.begin(), m_Hreal.end(), 0.0);
     std::fill(m_Himg.begin(), m_Himg.end(), 0.0);
-    setHamiltonian(m_Hreal, m_phiReal);
-    setHamiltonian(m_Himg, m_phiImg);
+    setHamiltonian(m_Hreal, m_phiReal, 0);
+    setHamiltonian(m_Himg, m_phiImg, 0);
 }
 
 double Simulation::getRho(uint k) const {
@@ -104,18 +103,19 @@ void Simulation::run(const std::string &metricsFilename, const std::string &dens
     checkIfFileExists(metricsFile);
     checkIfFileExists(densityFile);
 
+    auto meanEnergy{0.0};
     const auto nStep = static_cast<uint>(m_tau / m_deltaTau);
     auto step{0.0};
     for (uint i = 0; i < nStep; ++i) {
         for (uint k = 0; k < m_N; ++k)
             m_phiReal.at(k) += m_Himg.at(k) * m_deltaTau / 2; // (32)
 
-        setHamiltonian(m_Hreal, m_phiReal);
+        setHamiltonian(m_Hreal, m_phiReal, step);
         for (uint k = 0; k < m_N; ++k)
             m_phiImg.at(k) -= m_Hreal.at(k) * m_deltaTau; // (33)
 
-        setHamiltonian(m_Himg, m_phiImg);
-        setHamiltonian(m_Hreal, m_phiReal);
+        setHamiltonian(m_Himg, m_phiImg, step);
+        setHamiltonian(m_Hreal, m_phiReal, step);
 
         for (uint k = 0; k < m_N; ++k)
             m_phiReal.at(k) += m_Himg.at(k) * m_deltaTau / 2; // (34)
@@ -125,7 +125,11 @@ void Simulation::run(const std::string &metricsFilename, const std::string &dens
         if (i % m_nStepDensity == 0)
             saveDensity(densityFile);
         step += m_deltaTau;
+        const auto[N, xMean, epsilon] = getMetrics();
+        meanEnergy += epsilon;
     }
+    meanEnergy /= nStep;
+    std::cout << m_omega << "," << meanEnergy << std::endl;
     metricsFile.close();
     densityFile.close();
 }
