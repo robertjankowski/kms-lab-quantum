@@ -8,65 +8,10 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(gridExtra)
+library(scales)
+library(latex2exp)
 ```
-
-
-### Load metrics
-```{r}
-metrics <- read_csv("../output/metrics.csv", col_names = F)
-colnames(metrics) <- c("tau", "N", "<x>", "epsilon")
-```
-
-```{r}
-ggplot(metrics) +
-  geom_line(aes(tau, N)) +
-  theme_light()
-```
-
-```{r}
-ggplot(metrics) +
-  geom_line(aes(tau, `<x>`)) +
-  theme_light()
-```
-
-
-
-```{r}
-ggplot(metrics) +
-  geom_line(aes(tau, epsilon)) +
-  theme_light()
-```
-
-### Load density
-```{r}
-density <- read_csv("../output/density.csv", col_names = F)
-
-rename <- function(x){
-  if (x < 10) {
-    return(name <- paste('000',i,'plot.png',sep=''))
-  }
-  if (x < 100 && i >= 10) {
-    return(name <- paste('00',i,'plot.png', sep=''))
-  }
-  if (x >= 100) {
-    return(name <- paste('0', i,'plot.png', sep=''))
-  }
-}
-
-for (i in 1:nrow(density)) {
-  name <- rename(i)
-  png(name)
-  plot(as.numeric(density[i,]))
-  dev.off()
-}
-
-system('convert *.png -delay 3 -loop 0 animation.gif')
-```
-
-```{r}
-plot(as.numeric(density[100,]), type = "l", lwd=2)
-```
-
 
 ***
 ## Testowanie poprawności algorytmu przy wyłączonym polu oscylującym (kappa = 0, omage = 0) dla n=1,4,9
@@ -95,28 +40,46 @@ colnames(metrics_n9) <- c("tau", "N", "<x>", "epsilon")
 
 **Norma**
 ```{r, fig.width=10, fig.height=5}
-ggplot() +
+norm <- ggplot() +
   geom_line(data = metrics_n1, aes(tau, N, color = "n=1")) +
   geom_line(data = metrics_n4, aes(tau, N, color = "n=4")) +
   geom_line(data = metrics_n9, aes(tau, N, color = "n=9")) +
-  theme_light()
+  labs(y = "N", x = TeX("$\\tau$")) + 
+  theme_light() +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+
+ggsave(filename="plots/norm_n_1_4_9.pdf", plot = norm, width = 6, height = 4, units = "in")
+norm
 ```
 
 **<x>**
 ```{r, fig.width=10, fig.height=5}
-ggplot() +
+xmean <- ggplot() +
   geom_line(data = metrics_n1, aes(tau, `<x>`, color = "n=1")) +
   geom_line(data = metrics_n4, aes(tau, `<x>`, color = "n=4")) +
   geom_line(data = metrics_n9, aes(tau, `<x>`, color = "n=9")) +
-  theme_light()
+  labs(y = TeX("$<x>$"), x = TeX("$\\tau$")) +
+  theme_light() +
+    theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+
+ggsave(filename="plots/xmean_n_1_4_9.pdf", plot = xmean, width = 6, height = 4, units = "in")
 ```
 **Energia**
 ```{r, fig.width=10, fig.height=5}
-ggplot() +
+energy <- ggplot() +
   geom_line(data = metrics_n1, aes(tau, epsilon, color = "n=1")) +
   geom_line(data = metrics_n4, aes(tau, epsilon, color = "n=4")) +
   geom_line(data = metrics_n9, aes(tau, epsilon, color = "n=9")) +
-  theme_light()
+  theme_light() +
+  labs(y = TeX("$\\epsilon$"), x = TeX("$\\tau$")) +
+      theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+ggsave(filename="plots/energy_n_1_4_9.pdf", plot = energy, width = 6, height = 4, units = "in")
 ```
 
 # Symulacje z zaburzającym się polem elektrycznym
