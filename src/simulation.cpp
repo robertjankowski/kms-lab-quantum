@@ -126,9 +126,9 @@ void Simulation::run(const std::string &metricsFilename, const std::string &dens
             saveDensity(densityFile);
         step += m_deltaTau;
         const auto[N, xMean, epsilon] = getMetrics();
-        meanEnergy += epsilon;
+        meanEnergy = std::max(epsilon, meanEnergy);
     }
-    meanEnergy /= nStep;
+    // meanEnergy /= nStep;
     std::cout << m_omega << "," << meanEnergy << std::endl;
     metricsFile.close();
     densityFile.close();

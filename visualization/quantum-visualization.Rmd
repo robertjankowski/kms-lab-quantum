@@ -50,7 +50,7 @@ norm <- ggplot() +
         legend.title = element_blank(), legend.text = element_text(size = 13), 
         text = element_text(size = 14))
 
-ggsave(filename="plots/norm_n_1_4_9.pdf", plot = norm, width = 6, height = 4, units = "in")
+# ggsave(filename="plots/norm_n_1_4_9.pdf", plot = norm, width = 6, height = 4, units = "in")
 norm
 ```
 
@@ -79,7 +79,8 @@ energy <- ggplot() +
       theme(legend.position = "top", 
         legend.title = element_blank(), legend.text = element_text(size = 13), 
         text = element_text(size = 14))
-ggsave(filename="plots/energy_n_1_4_9.pdf", plot = energy, width = 6, height = 4, units = "in")
+# ggsave(filename="plots/energy_n_1_4_9.pdf", plot = energy, width = 6, height = 4, units = "in")
+energy
 ```
 
 # Symulacje z zaburzającym się polem elektrycznym
@@ -95,37 +96,86 @@ ggsave(filename="plots/energy_n_1_4_9.pdf", plot = energy, width = 6, height = 4
 # 1000  # save_density
 ```
 
+
 ```{r, info=F, warning=F, message=F}
-# dla kappa=3, n=1
-# metrics_omega3 <- read_csv("../output/metrics_kappa=1_omega=3.csv", col_names = F)
-# metrics_omega4 <- read_csv("../output/metrics_kappa=1_omega=4.csv", col_names = F)
-# metrics_omega8 <- read_csv("../output/metrics_kappa=1_omega=8.csv", col_names = F)
+metrics_omega15 <- read_csv("../output/resonance_metrics_kappa=3__omega=15_n=1.csv", col_names = F)
+metrics_omega10 <- read_csv("../output/resonance_metrics_kappa=3__omega=10_n=1.csv", col_names = F)
+metrics_omega20 <- read_csv("../output/resonance_metrics_kappa=3__omega=20_n=1.csv", col_names = F)
 
-metrics_omega3 <- read_csv("../output/metrics_n=4_kappa=8_omega=3.csv", col_names = F)
-metrics_omega4 <- read_csv("../output/metrics_n=4_kappa=8_omega=4.csv", col_names = F)
-metrics_omega8 <- read_csv("../output/metrics_n=4_kappa=8_omega=8.csv", col_names = F)
-metrics_omega16 <- read_csv("../output/metrics_n=4_kappa=8_omega=16.csv", col_names = F)
-metrics_omega32 <- read_csv("../output/metrics_n=4_kappa=8_omega=32.csv", col_names = F)
-
-colnames(metrics_omega3) <- c("tau", "N", "<x>", "epsilon")
-colnames(metrics_omega4) <- c("tau", "N", "<x>", "epsilon")
-colnames(metrics_omega8) <- c("tau", "N", "<x>", "epsilon")
-colnames(metrics_omega16) <- c("tau", "N", "<x>", "epsilon")
-colnames(metrics_omega32) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega15) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega10) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega20) <- c("tau", "N", "<x>", "epsilon")
 ```
 
 **Energia**
 ```{r, fig.width=12, fig.height=5}
+# n = 1
 ggplot() +
-  geom_line(data = metrics_omega3, aes(tau, epsilon, color = "omega=3pi^2/2")) +
-  geom_line(data = metrics_omega4, aes(tau, epsilon, color = "omega=4pi^2/2")) +
-  geom_line(data = metrics_omega8, aes(tau, epsilon, color = "omega=8pi^2/2")) +
-  geom_line(data = metrics_omega8, aes(tau, epsilon, color = "omega=16pi^2/2")) +
-  geom_line(data = metrics_omega8, aes(tau, epsilon, color = "omega=32pi^2/2")) +
-  theme_light()
+  geom_line(data = metrics_omega10, aes(tau, epsilon, color = "omega=10")) +
+  geom_line(data = metrics_omega15, aes(tau, epsilon, color = "omega=15")) +
+  geom_line(data = metrics_omega20, aes(tau, epsilon, color = "omega=20")) +
+  theme_light() +
+  labs(y = TeX("$\\epsilon$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\omega = 10$", "$\\omega = 15$", "$\\omega = 20$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
 ```
 
+```{r, info=F, warning=F, message=F}
+# n = 4
+metrics_omega33 <- read_csv("../output/resonance_metrics_kappa=3__omega=33_n=4.csv", col_names = F)
+metrics_omega34 <- read_csv("../output/resonance_metrics_kappa=3__omega=34_n=4.csv", col_names = F)
+metrics_omega35 <- read_csv("../output/resonance_metrics_kappa=3__omega=35_n=4.csv", col_names = F)
 
+colnames(metrics_omega33) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega34) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega35) <- c("tau", "N", "<x>", "epsilon")
+```
+
+```{r, fig.width=12, fig.height=5}
+# n = 4
+ggplot() +
+  geom_line(data = metrics_omega33, aes(tau, epsilon, color = "omega=33")) +
+  geom_line(data = metrics_omega34, aes(tau, epsilon, color = "omega=34")) +
+  geom_line(data = metrics_omega35, aes(tau, epsilon, color = "omega=35")) +
+  theme_light() +
+  labs(y = TeX("$\\epsilon$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\omega = 33$", "$\\omega = 34$", "$\\omega = 35$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+```
+```{r, info=F, warning=F, message=F}
+# n = 9
+metrics_omega91 <- read_csv("../output/resonance_metrics_kappa=3__omega=91_n=9.csv", col_names = F)
+metrics_omega92 <- read_csv("../output/resonance_metrics_kappa=3__omega=92_n=9.csv", col_names = F)
+metrics_omega93 <- read_csv("../output/resonance_metrics_kappa=3__omega=93_n=9.csv", col_names = F)
+metrics_omega94 <- read_csv("../output/resonance_metrics_kappa=3__omega=94_n=9.csv", col_names = F)
+metrics_omega95 <- read_csv("../output/resonance_metrics_kappa=3__omega=95_n=9.csv", col_names = F)
+
+colnames(metrics_omega91) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega92) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega93) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega94) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_omega95) <- c("tau", "N", "<x>", "epsilon")
+```
+
+```{r, fig.width=12, fig.height=5}
+# n = 9
+ggplot() +
+  geom_line(data = metrics_omega91, aes(tau, epsilon, color = "omega=91")) +
+  geom_line(data = metrics_omega92, aes(tau, epsilon, color = "omega=92")) +
+  geom_line(data = metrics_omega93, aes(tau, epsilon, color = "omega=93")) +
+  geom_line(data = metrics_omega94, aes(tau, epsilon, color = "omega=94")) +
+  geom_line(data = metrics_omega95, aes(tau, epsilon, color = "omega=95")) +
+  theme_light() +
+  labs(y = TeX("$\\epsilon$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\omega = 91$", "$\\omega = 92$", "$\\omega = 93$", "$\\omega = 94$", "$\\omega = 95$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+```
 
 ```{r, message=FALSE}
 density.animation <- function(filename) {
@@ -176,9 +226,9 @@ library(gridExtra)
 # 1000  # save_metrics
 # 1000  # save_density
 
-omega_n_4 <- read_csv("../output/resonance_freq_omega_n=4.txt", col_names = F)
-omega_n_9 <- read_csv("../output/resonance_freq_omega_n=9.txt", col_names = F)
-omega_n_1 <- read_csv("../output/resonance_freq_omega_n=1.txt", col_names = F)
+omega_n_4 <- read_csv("../output/resonance_freq_omega_n=4_energy_max.txt", col_names = F)
+omega_n_9 <- read_csv("../output/resonance_freq_omega_n=9_energy_max.txt", col_names = F)
+omega_n_1 <- read_csv("../output/resonance_freq_omega_n=1_energy_max.txt", col_names = F)
 
 colnames(omega_n_1) <- c("omega", "Energy")
 colnames(omega_n_4) <- c("omega", "Energy")
@@ -205,7 +255,7 @@ grid.arrange(o1, o4, o9, ncol = 3)
 
 ### Proper graph with resonanse omega
 ```{r, message=FALSE}
-omega_n1 <- read_csv("../output/resonance_freq_omega_n=1_zoom.txt", col_names = F)
+omega_n1 <- read_csv("../output/resonance_freq_omega_n=1_zoom_v1.txt", col_names = F)
 
 colnames(omega_n1) <- c("omega", "Energy")
 
@@ -218,15 +268,16 @@ omega_n1$omega <- omega_n1$omega / resonanse_omega
 ggplot(omega_n1) + 
   geom_line(aes(omega, Energy)) + 
   theme_light() +
-  labs(title = "n=1", y = "<Energy>", x = "omega / omega_resonanse")
+  labs(title = "n=1", y = TeX("$< \\epsilon >$"), x = TeX("$\\omega / \\omega_{res}$")) +
+  theme(text = element_text(size = 14))
 ```
 
+### Animation - n=1->2, n=4->3 
 ```{r, message=F}
 density.animation("../output/resonance_density_kappa=3__omega=14_n=1.csv")
 density.animation("../output/resonance_density_kappa=3__omega=15_n=1.csv")
 density.animation("../output/resonance_density_kappa=3__omega=16_n=1.csv")
 ```
-
 
 ```{r}
 density.animation("../output/resonance_density_kappa=3__omega=33_n=4.csv")
@@ -234,3 +285,8 @@ density.animation("../output/resonance_density_kappa=3__omega=34_n=4.csv")
 density.animation("../output/resonance_density_kappa=3__omega=35_n=4.csv")
 ```
 
+```{r}
+density.animation("../output/resonance_density_kappa=3__omega=95_n=9.csv")
+density.animation("../output/resonance_density_kappa=3__omega=94_n=9.csv")
+density.animation("../output/resonance_density_kappa=3__omega=93_n=9.csv")
+```

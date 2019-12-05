@@ -2,6 +2,6 @@
 10    # tau
 1e-4  # delta_tau
 3     # kappa
-4     # n
+9     # n
 1000  # save_metrics
 1000  # save_density
