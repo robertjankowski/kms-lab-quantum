@@ -277,7 +277,7 @@ omega_n1$omega <- omega_n1$omega / resonanse_omega
 ggplot(omega_n1) + 
   geom_line(aes(omega, Energy)) + 
   theme_light() +
-  labs(title = TeX("n=1, $\\omega_{res} = 14,7$"), y = TeX("$< \\epsilon >$"), x = TeX("$\\omega / \\omega_{res}$")) +
+  labs(title = TeX("n=1, $\\omega_{res} = 14,7$"), y = TeX ("$< \\epsilon >$"), x = TeX("$\\omega / \\omega_{res}$")) +
   theme(text = element_text(size = 14))
 ```
 
@@ -321,19 +321,33 @@ colnames(omega_n_1_k_7) <- c("omega", "Energy")
 colnames(omega_n_1_k_9) <- c("omega", "Energy")
 ```
 
+```{r}
+library(grid)
+```
 
-```{r, fig.width=14, fig.height=5}
+```{r, fig.width=6, fig.height=4}
+# pdf("plots/resonanse_n_1.pdf", width = 6, height = 4, paper = 'special')
 o1 <- ggplot() + 
-  geom_line(data = omega_n_1_k_1, aes(omega, Energy, color = "n=1,k=1")) + 
-  geom_line(data = omega_n_1_k_3, aes(omega, Energy, color = "n=1,k=3")) + 
-  geom_line(data = omega_n_1_k_5, aes(omega, Energy, color = "n=1,k=5")) + 
-  geom_line(data = omega_n_1_k_7, aes(omega, Energy, color = "n=1,k=7")) + 
-  geom_line(data = omega_n_1_k_9, aes(omega, Energy, color = "n=1,k=9")) + 
+  geom_line(data = omega_n_1_k_1, aes(omega, Energy, color = "k=1")) + 
+  geom_line(data = omega_n_1_k_3, aes(omega, Energy, color = "k=3")) + 
+  geom_line(data = omega_n_1_k_5, aes(omega, Energy, color = "k=5")) + 
+  geom_line(data = omega_n_1_k_7, aes(omega, Energy, color = "k=7")) + 
+  geom_line(data = omega_n_1_k_9, aes(omega, Energy, color = "k=9")) + 
   geom_vline(xintercept = 3 * pi * pi / 2, color = "red") + 
   geom_vline(xintercept = 4 * pi * pi / 2, color = "green") + 
   geom_vline(xintercept = 8 * pi * pi / 2, color = "blue") + 
-  theme_light()
+  # annotate("text", x=13, y=30, label = TeX("$3 \\pi^2 / 2$"), parse = TRUE) +
+  theme_light() +
+  labs(title = "n = 1", y = TeX("$< \\epsilon >_{max}$"), x = TeX("$\\omega$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "bottom", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
 o1
+grid.text(TeX("$3 \\pi^2 / 2$"), x = 0.31, y = 0.96)
+grid.text(TeX("$4 \\pi^2 / 2$"), x = 0.41, y = 0.96)
+grid.text(TeX("$8 \\pi^2 / 2$"), x = 0.76, y = 0.96)
+dev.off()
 ```
 
 ```{r, message=F}
@@ -351,7 +365,8 @@ colnames(omega_n_4_k_7) <- c("omega", "Energy")
 colnames(omega_n_4_k_9) <- c("omega", "Energy")
 ```
 
-```{r, fig.width=14, fig.height=5}
+```{r, fig.width=6, fig.height=4}
+# pdf("plots/resonanse_n_4.pdf", width = 6, height = 4, paper = 'special')
 o1 <- ggplot() + 
   geom_line(data = omega_n_4_k_1, aes(omega, Energy, color = "n=4,k=1")) + 
   geom_line(data = omega_n_4_k_3, aes(omega, Energy, color = "n=4,k=3")) + 
@@ -361,8 +376,17 @@ o1 <- ggplot() +
   geom_vline(xintercept = 3 * pi * pi / 2, color = "red") + 
   geom_vline(xintercept = 4 * pi * pi / 2, color = "green") + 
   geom_vline(xintercept = 8 * pi * pi / 2, color = "blue") + 
-  theme_light()
+  theme_light() +
+  labs(title = "n = 4", y = TeX("$< \\epsilon >_{max}$"), x = TeX("$\\omega$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "bottom", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
 o1
+grid.text(TeX("$3 \\pi^2 / 2$"), x = 0.32, y = 0.96)
+grid.text(TeX("$4 \\pi^2 / 2$"), x = 0.42, y = 0.96)
+grid.text(TeX("$8 \\pi^2 / 2$"), x = 0.76, y = 0.96)
+# dev.off()
 ```
 
 ```{r, message=F}
@@ -371,18 +395,16 @@ omega_n_9_k_3 <- read_csv("../output/new_resonanse/kappa_3_omega_1_n_9.txt", col
 omega_n_9_k_5 <- read_csv("../output/new_resonanse/kappa_5_omega_1_n_9.txt", col_names = F)
 omega_n_9_k_7 <- read_csv("../output/new_resonanse/kappa_7_omega_1_n_9.txt", col_names = F)
 omega_n_9_k_9 <- read_csv("../output/new_resonanse/kappa_9_omega_1_n_9.txt", col_names = F)
-omega_n_9_k_20 <- read_csv("../output/new_resonanse/kappa_20_omega_1_n_9.txt", col_names = F)
-
 
 colnames(omega_n_9_k_1) <- c("omega", "Energy")
 colnames(omega_n_9_k_3) <- c("omega", "Energy")
 colnames(omega_n_9_k_5) <- c("omega", "Energy")
 colnames(omega_n_9_k_7) <- c("omega", "Energy")
 colnames(omega_n_9_k_9) <- c("omega", "Energy")
-colnames(omega_n_9_k_20) <- c("omega", "Energy")
 ```
 
-```{r, fig.width=14, fig.height=5}
+```{r, fig.width=6, fig.height=4}
+# pdf("plots/resonanse_n_9.pdf", width = 6, height = 4, paper = 'special')
 o1 <- ggplot() + 
   geom_line(data = omega_n_9_k_1, aes(omega, Energy, color = "n=9,k=1")) + 
   geom_line(data = omega_n_9_k_3, aes(omega, Energy, color = "n=9,k=3")) + 
@@ -392,6 +414,129 @@ o1 <- ggplot() +
   geom_vline(xintercept = 3 * pi * pi / 2, color = "red") + 
   geom_vline(xintercept = 4 * pi * pi / 2, color = "green") + 
   geom_vline(xintercept = 8 * pi * pi / 2, color = "blue") + 
-  theme_light()
+  theme_light() +
+  labs(title = "n = 9", y = TeX("$< \\epsilon >_{max}$"), x = TeX("$\\omega$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "bottom", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+
 o1
+grid.text(TeX("$3 \\pi^2 / 2$"), x = 0.34, y = 0.96)
+grid.text(TeX("$4 \\pi^2 / 2$"), x = 0.44, y = 0.96)
+grid.text(TeX("$8 \\pi^2 / 2$"), x = 0.76, y = 0.96)
+# dev.off()
+```
+
+
+```{r, message=FALSE}
+omega_k_1 <- read_csv("../output/new_resonanse/kappa_1_omega_1_n_1_zoom.txt", col_names = F)
+omega_k_3 <- read_csv("../output/new_resonanse/kappa_3_omega_1_n_1_zoom.txt", col_names = F)
+omega_k_5 <- read_csv("../output/new_resonanse/kappa_5_omega_1_n_1_zoom.txt", col_names = F)
+omega_k_7 <- read_csv("../output/new_resonanse/kappa_7_omega_1_n_1_zoom.txt", col_names = F)
+omega_k_9 <- read_csv("../output/new_resonanse/kappa_9_omega_1_n_1_zoom.txt", col_names = F)
+
+colnames(omega_k_1) <- c("omega", "Energy")
+colnames(omega_k_3) <- c("omega", "Energy")
+colnames(omega_k_5) <- c("omega", "Energy")
+colnames(omega_k_7) <- c("omega", "Energy")
+colnames(omega_k_9) <- c("omega", "Energy")
+
+n <- nrow(omega_k_1) - 6
+omega_k_1 <- omega_k_1[1:n, ]
+omega_k_3 <- omega_k_3[1:n, ]
+omega_k_5 <- omega_k_5[1:n, ]
+omega_k_7 <- omega_k_7[1:n, ]
+omega_k_9 <- omega_k_9[1:n, ]
+```
+
+```{r}
+resonanse_omega <- omega_k_1[which(omega_k_1$Energy == max(omega_k_1$Energy)), ]$omega
+omega_k_1$omega <- omega_k_1$omega / resonanse_omega
+omega_k_3$omega <- omega_k_3$omega / resonanse_omega
+omega_k_5$omega <- omega_k_5$omega / resonanse_omega
+omega_k_7$omega <- omega_k_7$omega / resonanse_omega
+omega_k_9$omega <- omega_k_9$omega / resonanse_omega
+```
+
+
+```{r}
+# pdf("plots/resonanse_n_1_zoom.pdf", width = 6, height = 4, paper = 'special')
+o1 <- ggplot() + 
+  geom_line(data = omega_k_1, aes(omega, Energy, color = "k=1")) + 
+  geom_line(data = omega_k_3, aes(omega, Energy, color = "k=3")) + 
+  geom_line(data = omega_k_5, aes(omega, Energy, color = "k=5")) + 
+  geom_line(data = omega_k_7, aes(omega, Energy, color = "k=7")) + 
+  geom_line(data = omega_k_9, aes(omega, Energy, color = "k=9")) + 
+  geom_vline(xintercept = 1, color = "red") + 
+  theme_light() +
+  labs(title = "n = 1", y = TeX("$< \\epsilon >_{max}$"), x = TeX("$\\omega / \\omega_{res}$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "bottom", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+o1
+# dev.off()
+```
+
+
+** Energia, norma i położenie średnie dla omega rezonansowe **
+```{r, info=F, message=F}
+metrics_k1 <- read_csv("../output/metrics_resonance_kappa=1_omega=14.8_n=1.csv", col_names = F)
+metrics_k3 <- read_csv("../output/metrics_resonance_kappa=3_omega=14.8_n=1.csv", col_names = F)
+metrics_k5 <- read_csv("../output/metrics_resonance_kappa=5_omega=14.8_n=1.csv", col_names = F)
+metrics_k7 <- read_csv("../output/metrics_resonance_kappa=7_omega=14.8_n=1.csv", col_names = F)
+metrics_k9 <- read_csv("../output/metrics_resonance_kappa=9_omega=14.8_n=1.csv", col_names = F)
+
+colnames(metrics_k1) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k3) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k5) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k7) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k9) <- c("tau", "N", "<x>", "epsilon")
+```
+
+# TODO - dodać te 3 wykresy do raportu !!
+```{r, fig.width=6, fig.height=4}
+ggplot() +
+  geom_line(data = metrics_k1, aes(tau, epsilon, color = "k=1")) +
+  geom_line(data = metrics_k3, aes(tau, epsilon, color = "k=3")) +
+  geom_line(data = metrics_k5, aes(tau, epsilon, color = "k=5")) +
+  geom_line(data = metrics_k7, aes(tau, epsilon, color = "k=7")) +
+  geom_line(data = metrics_k9, aes(tau, epsilon, color = "k=9")) +
+  theme_light() +
+  labs(y = TeX("$\\epsilon$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+```
+
+```{r, fig.width=6, fig.height=4}
+ggplot() +
+  geom_line(data = metrics_k1, aes(tau, `<x>`, color = "k=1")) +
+  geom_line(data = metrics_k3, aes(tau, `<x>`, color = "k=3")) +
+  geom_line(data = metrics_k5, aes(tau, `<x>`, color = "k=5")) +
+  geom_line(data = metrics_k7, aes(tau, `<x>`, color = "k=7")) +
+  geom_line(data = metrics_k9, aes(tau, `<x>`, color = "k=9")) +
+  theme_light() +
+  labs(y = TeX("$<x>$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+```
+
+```{r, fig.width=6, fig.height=4}
+ggplot() +
+  geom_line(data = metrics_k1, aes(tau, N, color = "k=1")) +
+  geom_line(data = metrics_k3, aes(tau, N, color = "k=3")) +
+  geom_line(data = metrics_k5, aes(tau, N, color = "k=5")) +
+  geom_line(data = metrics_k7, aes(tau, N, color = "k=7")) +
+  geom_line(data = metrics_k9, aes(tau, N, color = "k=9")) +
+  theme_light() +
+  labs(y = TeX("$N$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
 ```

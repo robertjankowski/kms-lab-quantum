@@ -1,7 +1,7 @@
 100   # N
 10    # tau
 1e-4  # delta_tau
-9     # kappa
-9     # n
+1     # kappa
+1     # n
 1000  # save_metrics
 1000  # save_density
