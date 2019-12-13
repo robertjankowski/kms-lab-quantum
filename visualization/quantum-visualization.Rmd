@@ -495,7 +495,6 @@ colnames(metrics_k7) <- c("tau", "N", "<x>", "epsilon")
 colnames(metrics_k9) <- c("tau", "N", "<x>", "epsilon")
 ```
 
-# TODO - dodać te 3 wykresy do raportu !!
 ```{r, fig.width=6, fig.height=4}
 pdf("plots/resonanse_n_1_energy.pdf", width = 6, height = 4, paper = 'special')
 ggplot() +
@@ -545,4 +544,70 @@ ggplot() +
         legend.title = element_blank(), legend.text = element_text(size = 13), 
         text = element_text(size = 14))
 dev.off()
+```
+
+## Porównanie z częstością nierezonansową
+```{r, info=F, message=F}
+metrics_k1 <- read_csv("../output/metrics_no_resonance_kappa=1_omega=10_n=1.csv", col_names = F)
+metrics_k3 <- read_csv("../output/metrics_no_resonance_kappa=3_omega=10_n=1.csv", col_names = F)
+metrics_k5 <- read_csv("../output/metrics_no_resonance_kappa=5_omega=10_n=1.csv", col_names = F)
+metrics_k7 <- read_csv("../output/metrics_no_resonance_kappa=7_omega=10_n=1.csv", col_names = F)
+metrics_k9 <- read_csv("../output/metrics_no_resonance_kappa=9_omega=10_n=1.csv", col_names = F)
+
+colnames(metrics_k1) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k3) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k5) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k7) <- c("tau", "N", "<x>", "epsilon")
+colnames(metrics_k9) <- c("tau", "N", "<x>", "epsilon")
+```
+
+```{r, fig.width=6, fig.height=4}
+pdf("plots/no_resonanse_n_1_energy.pdf", width = 6, height = 4, paper = 'special')
+ggplot() +
+  geom_line(data = metrics_k1, aes(tau, epsilon, color = "k=1")) +
+  geom_line(data = metrics_k3, aes(tau, epsilon, color = "k=3")) +
+  geom_line(data = metrics_k5, aes(tau, epsilon, color = "k=5")) +
+  geom_line(data = metrics_k7, aes(tau, epsilon, color = "k=7")) +
+  geom_line(data = metrics_k9, aes(tau, epsilon, color = "k=9")) +
+  theme_light() +
+  labs(y = TeX("$\\epsilon$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+dev.off()
+```
+
+```{r, fig.width=6, fig.height=4}
+pdf("plots/no_resonanse_n_1_xmean.pdf", width = 6, height = 4, paper = 'special')
+ggplot() +
+  geom_line(data = metrics_k1[metrics_k1$tau < 4,], aes(tau, `<x>`, color = "k=1")) +
+  geom_line(data = metrics_k3[metrics_k3$tau < 4,], aes(tau, `<x>`, color = "k=3")) +
+  geom_line(data = metrics_k5[metrics_k5$tau < 4,], aes(tau, `<x>`, color = "k=5")) +
+  geom_line(data = metrics_k7[metrics_k7$tau < 4,], aes(tau, `<x>`, color = "k=7")) +
+  geom_line(data = metrics_k7[metrics_k7$tau < 4,], aes(tau, `<x>`, color = "k=9")) +
+  theme_light() +
+  labs(y = TeX("$<x>$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+dev.off()
+```
+
+```{r, fig.width=6, fig.height=4}
+pdf("plots/no_resonanse_n_1_norm.pdf", width = 6, height = 4, paper = 'special')
+ggplot() +
+  geom_line(data = metrics_k1[metrics_k1$tau < 4,], aes(tau, N, color = "k=1")) +
+  geom_line(data = metrics_k3[metrics_k3$tau < 4,], aes(tau, N, color = "k=3")) +
+  geom_line(data = metrics_k5[metrics_k5$tau < 4,], aes(tau, N, color = "k=5")) +
+  geom_line(data = metrics_k7[metrics_k7$tau < 4,], aes(tau, N, color = "k=7")) +
+  geom_line(data = metrics_k7[metrics_k7$tau < 4,], aes(tau, N, color = "k=9")) +
+  theme_light() +
+  labs(y = TeX("$N$"), x = TeX("$\\tau$")) +
+  scale_color_discrete(labels = unname(TeX(c("$\\kappa = 1$", "$\\kappa = 3$", "$\\kappa = 5$", "$\\kappa = 7$", "$\\kappa = 9$")))) +
+  theme(legend.position = "top", 
+        legend.title = element_blank(), legend.text = element_text(size = 13), 
+        text = element_text(size = 14))
+cddev.off()
 ```
